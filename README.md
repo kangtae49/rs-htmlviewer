@@ -43,3 +43,7 @@ git branch -M main
 git remote add origin https://github.com/kangtae49/rs-htmlviewer.git
 git push -u origin main
 ```
+
+```sh
+cargo tauri dev
+```
