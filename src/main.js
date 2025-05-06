@@ -35,14 +35,23 @@ async function loadFiles(path = ".", parentElement = null) {
 
   let fileTree;
   if (parentElement) {
+    const icon = parentElement.querySelector('i');
+
     if (parentElement.dataset.expanded === "true") {
       parentElement.dataset.expanded = "false";
       parentElement.removeChild(parentElement.querySelector("ul"));
+
+      icon.classList.remove('fa-folder-open');
+      icon.classList.add('fa-folder');
       return;
     } else {
       parentElement.dataset.expanded = "true";
       fileTree = document.createElement("ul");
       parentElement.appendChild(fileTree);
+
+      icon.classList.remove('fa-folder');
+      icon.classList.add('fa-folder-open');
+
     }
   } else {
     fileTree = document.querySelector("#file-tree");
@@ -62,7 +71,7 @@ async function loadFiles(path = ".", parentElement = null) {
         loadFiles(file.path, li);
       };
     } else {
-      li.innerHTML = `<i class="fa-solid fa-file"></i> <span>${file.name}</span>`;
+      li.innerHTML = `<i class="fa-solid fa-file-code"></i> <span>${file.name}</span>`;
       li.onclick = async (event) => {
         event.stopPropagation();
         if (file.name.endsWith(".html")) {

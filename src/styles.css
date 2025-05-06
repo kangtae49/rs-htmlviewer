@@ -4,8 +4,12 @@ body { margin: 0; padding: 0; height: 100vh; display: flex;}
 .right-pane { width: 70%; padding: 0; margin:0; overflow: auto; }
 .gutter { background-color: #eee; background-repeat: no-repeat; background-position: 50%; }
 .gutter:hover { cursor: ew-resize; }
-.tree { list-style: none; padding: 0 0 0 10px; margin: 0;}
+#root-folder {cursor: pointer;}
+.tree { list-style: none; padding: 0 0 0 10px; margin: 0; font-size: 0.9em}
 .tree ul { padding: 0 0 0 10px; margin: 0;}
 .tree li { list-style: none; cursor: pointer; padding: 0; white-space: nowrap;}
 .fa-folder { color: #f4a261; margin-right: 5px;}
+.fa-folder-open { color: #f4a261; margin-right: 5px;}
 .fa-file { color: #2a9d8f; margin-right: 5px;}
+.fa-file-code { color: #2a9d8f; margin-right: 5px;}
+

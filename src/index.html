@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;">
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,8 +15,8 @@
   <div class="container">
     <div class="left-pane">
       <div id="root-folder">
-          <i class="fa-solid fa-folder" id="folder-icon"></i>
-          <span id="root-folder-name">폴더</span>
+          <i class="fa-solid fa-folder-open" id="folder-icon"></i>
+          <span id="root-folder-name">/</span>
       </div>
       <div>
         <ul id="file-tree" class="tree"></ul>

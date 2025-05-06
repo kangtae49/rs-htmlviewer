@@ -1,13 +1,14 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use std::env;
-use std::sync::{RwLock};
-use std::path::{Path, PathBuf};
-use std::fs;
 use serde::Serialize;
+use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::Mutex;
+use tauri::{AppHandle, Manager};
+use tauri::menu::{MenuBuilder};
 use tauri::{Emitter, State};
-use tauri::AppHandle;
 
-struct AppState(RwLock<AppStateInner>);
+struct AppState(Mutex<AppStateInner>);
 
 struct AppStateInner {
     root_folder: String,
@@ -15,26 +16,29 @@ struct AppStateInner {
 
 impl AppState {
     pub fn new(root_folder: &str) -> Self {
-        AppState(RwLock::new(AppStateInner {
+        AppState(Mutex::new(AppStateInner {
             root_folder: root_folder.to_owned(),
         }))
     }
     pub fn get_root_folder(&self) -> String {
-        self.0.read().unwrap().root_folder.clone()
+        self.0.lock().unwrap().root_folder.clone()
     }
     pub fn get_root_folder_name(&self) -> String {
         let root_folder = self.get_root_folder();
         let folder = Path::new(&root_folder);
         let mut folder_name = String::new();
         if folder.exists() {
-            folder_name = folder.file_name().unwrap_or_else(|| folder.as_os_str()).to_string_lossy().to_string();
+            folder_name = folder
+                .file_name()
+                .unwrap_or_else(|| folder.as_os_str())
+                .to_string_lossy()
+                .to_string();
         }
         folder_name
     }
     pub fn set_root_folder(&self, root_folder: String) {
-        self.0.write().unwrap().root_folder = root_folder;
+        self.0.lock().unwrap().root_folder = root_folder;
     }
-
 }
 
 pub trait LogExt {
@@ -46,7 +50,6 @@ impl LogExt for AppHandle {
         let _ = self.emit("log", message);
     }
 }
-
 
 #[tauri::command]
 fn get_root_path(state: State<AppState>, app: AppHandle) -> String {
@@ -87,18 +90,23 @@ fn list_directory(path: String) -> Vec<FileEntry> {
             let file_path = entry.path().to_string_lossy().to_string();
             let is_dir = entry.path().is_dir();
             if is_dir || file_name.to_lowercase().ends_with(".html") {
-                entries.push(FileEntry { name: file_name, path: file_path, is_dir });
+                entries.push(FileEntry {
+                    name: file_name,
+                    path: file_path,
+                    is_dir,
+                });
             }
         }
     }
     entries
 }
 
-
 #[tauri::command]
 fn read_html_file(path: String) -> String {
     fs::read_to_string(path).unwrap_or_else(|_| "<p>Not exist file</p>".to_string())
 }
+
+
 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -115,15 +123,35 @@ pub fn run() {
                 default_path
             }
         }
-        None => default_path
+        None => default_path,
     };
     let root_folder = root_path.to_string_lossy().into_owned();
 
     tauri::Builder::default()
+        .setup(|app| {
+            let menu = MenuBuilder::new(app)
+                .text("home", "Home")
+                .build()?;
+            app.set_menu(menu)?;
+            app.on_menu_event(move |app_handle: &tauri::AppHandle, event| {
+                println!("menu event: {:?}", event.id());
+                match event.id().0.as_str() {
+                    "home" => {
+                        let _ = app_handle.get_webview_window("main").unwrap().eval("window.document.location.href = \"http://tauri.localhost/\"");
+                    }
+                    _ => {
+
+                    }
+                }
+            });
+
+            Ok(())
+        })
         .manage(AppState::new(&root_folder))
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            get_root_path, get_root_path_name,
+            get_root_path,
+            get_root_path_name,
             set_root_path,
             list_directory,
             read_html_file
@@ -131,4 +159,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
