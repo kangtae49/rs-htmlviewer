@@ -134,7 +134,6 @@ pub fn run() {
                 .build()?;
             app.set_menu(menu)?;
             app.on_menu_event(move |app_handle: &tauri::AppHandle, event| {
-                println!("menu event: {:?}", event.id());
                 match event.id().0.as_str() {
                     "home" => {
                         let _ = app_handle.get_webview_window("main").unwrap().eval("window.document.location.href = \"http://tauri.localhost/\"");

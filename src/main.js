@@ -73,10 +73,33 @@ async function loadFiles(path = ".", parentElement = null) {
     } else {
       li.innerHTML = `<i class="fa-solid fa-file-code"></i> <span>${file.name}</span>`;
       li.onclick = async (event) => {
-        event.stopPropagation();
-        if (file.name.endsWith(".html")) {
-          const viewer = document.querySelector("#viewer");
-          viewer.innerHTML = await invoke_rs("read_html_file", { path: file.path });
+        try {
+          event.stopPropagation();
+          if (file.name.endsWith(".html")) {
+            //const viewer = document.querySelector("#viewer");
+            //viewer.innerHTML = await invoke_rs("read_html_file", { path: file.path });
+
+            const iframe = document.querySelector('#iframe-viewer');
+            iframe.src = "about:blank";
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(await invoke_rs("read_html_file", {path: file.path}));
+            doc.close();
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.addEventListener('click', (event) => {
+              event.preventDefault();
+              if (event.target.tagName === 'A') {
+                window.open(event.target.href );
+              } else if (event.target?.src?.startsWith("http")) {
+                window.open(event.target.src);
+              }
+            });
+
+          }
+        }catch(e) {
+          const iframe = document.querySelector('#iframe-viewer');
+          iframe.src = "about:blank";
+          console.log(e);
         }
       };
     }
