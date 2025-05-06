@@ -5,16 +5,23 @@
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri App</title>
+    <script src="split.js"></script>
+    <link rel="stylesheet" href="fontawesome/css/all.min.css">
     <script type="module" src="/main.js" defer></script>
   </head>
 
   <body>
   <div class="container">
     <div class="left-pane">
-      left
+      <div id="root-folder">
+          <i class="fa-solid fa-folder" id="folder-icon"></i>
+          <span id="root-folder-name">폴더</span>
+      </div>
+      <div>
+        <ul id="file-tree" class="tree"></ul>
+      </div>
     </div>
-    <div class="right-pane">
-      right
+    <div class="right-pane" id="viewer">
     </div>
   </div>
   </body>
