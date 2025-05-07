@@ -4,9 +4,10 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle};
 use tauri::menu::{MenuBuilder};
 use tauri::{Emitter, State};
+use tauri::Manager;
 
 struct AppState(Mutex<AppStateInner>);
 
@@ -136,14 +137,14 @@ pub fn run() {
             app.on_menu_event(move |app_handle: &tauri::AppHandle, event| {
                 match event.id().0.as_str() {
                     "home" => {
-                        let _ = app_handle.get_webview_window("main").unwrap().eval("window.document.location.href = \"http://tauri.localhost/\"");
+                        // let _ = app_handle.get_webview_window("main").unwrap().eval("window.document.location.href = \"http://tauri.localhost/\"");
+                        let _ = app_handle.get_webview_window("main").unwrap().eval("window.document.location.href = \"/\"");
                     }
                     _ => {
 
                     }
                 }
             });
-
             Ok(())
         })
         .manage(AppState::new(&root_folder))

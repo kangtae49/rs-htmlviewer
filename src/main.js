@@ -10,6 +10,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadTree();
 });
 
+
 listen_rs("log", (event) => {
   console.log(event.payload);
 });
@@ -73,9 +74,12 @@ async function loadFiles(path = ".", parentElement = null) {
     } else {
       li.innerHTML = `<i class="fa-solid fa-file-code"></i> <span>${file.name}</span>`;
       li.onclick = async (event) => {
-        try {
+        //try {
           event.stopPropagation();
-          if (file.name.endsWith(".html")) {
+          event.preventDefault();
+          if (file.name.toUpperCase().endsWith(".HTML")) {
+            // const iframe = document.querySelector('#iframe-viewer');
+            // iframe.src = file.path;
             //const viewer = document.querySelector("#viewer");
             //viewer.innerHTML = await invoke_rs("read_html_file", { path: file.path });
 
@@ -85,6 +89,14 @@ async function loadFiles(path = ".", parentElement = null) {
             doc.open();
             doc.write(await invoke_rs("read_html_file", {path: file.path}));
             doc.close();
+
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            // iframeDoc.addEventListener('click', (event) => {
+            //   event.preventDefault();
+            //   event.stopPropagation();
+            //   console.log(iframe.src);
+            // });
+            /*
             const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
             iframeDoc.addEventListener('click', (event) => {
               event.preventDefault();
@@ -94,13 +106,17 @@ async function loadFiles(path = ".", parentElement = null) {
                 window.open(event.target.src);
               }
             });
-
+            */
           }
-        }catch(e) {
-          const iframe = document.querySelector('#iframe-viewer');
-          iframe.src = "about:blank";
-          console.log(e);
-        }
+        // }catch(e) {
+        //   const iframe = document.querySelector('#iframe-viewer');
+        //   iframe.src = "about:blank";
+        //   const doc = iframe.contentWindow.document;
+        //   doc.open();
+        //   doc.write("");
+        //   doc.close();
+        //   console.log(e);
+        // }
       };
     }
 
